@@ -10,7 +10,6 @@
       "types": "./lib/typescript/index.d.ts",
       "default": "./lib/module/index.js"
     },
-    "./app.plugin.js": "./app.plugin.js",
     "./package.json": "./package.json"
   },
   "files": [
@@ -20,8 +19,6 @@
     "ios",
     "*.podspec",
     "react-native.config.js",
-    "app.plugin.js",
-    "expo-module.config.json",
     "!ios/build",
     "!android/build",
     "!android/gradle",
@@ -39,7 +36,6 @@
     "typecheck:watch": "tsc --build --watch",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
-    "test:plugin": "node test-plugin.js",
     "prepare": "bob build",
     "release": "release-it --only-version"
   },
@@ -71,7 +67,6 @@
     "@eslint/compat": "^1.2.7",
     "@eslint/eslintrc": "^3.3.0",
     "@eslint/js": "^9.22.0",
-    "@expo/config-plugins": "10.1.2",
     "@react-native-community/cli": "20.0.1",
     "@react-native/babel-preset": "0.79.2",
     "@react-native/eslint-config": "^0.78.0",
@@ -82,7 +77,6 @@
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.3",
-    "expo-module-scripts": "^4.1.9",
     "jest": "^30.1.0",
     "prettier": "^3.0.3",
     "react": "^19.0.0",

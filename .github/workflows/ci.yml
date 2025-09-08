@@ -101,6 +101,12 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
+      - name: Verify npm availability
+        run: |
+          echo "Node.js version: $(node --version)"
+          echo "npm version: $(npm --version)"
+          echo "yarn version: $(yarn --version)"
+
       - name: Update Version
         run: |
           VERSION="${{ github.event.release.tag_name }}"
