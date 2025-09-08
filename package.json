@@ -1,6 +1,6 @@
 {
   "name": "@novastera-oss/rn-fileinfo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Lightweight React Native TurboModule for safe and efficient file metadata access on iOS and Android",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/index.d.ts",
@@ -18,7 +18,6 @@
     "lib",
     "android",
     "ios",
-    "expo-plugin",
     "*.podspec",
     "react-native.config.js",
     "app.plugin.js",
@@ -40,9 +39,8 @@
     "typecheck:watch": "tsc --build --watch",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
-    "build:expo-plugin": "cd expo-plugin && tsc",
     "test:plugin": "node test-plugin.js",
-    "prepare": "bob build && yarn build:expo-plugin",
+    "prepare": "bob build",
     "release": "release-it --only-version"
   },
   "keywords": [
@@ -147,13 +145,6 @@
           "project": "tsconfig.build.json",
           "tsc": "./node_modules/.bin/tsc"
         }
-      ],
-      [
-        "typescript",
-        {
-          "project": "expo-plugin/tsconfig.json",
-          "tsc": "./node_modules/.bin/tsc"
-        }
       ]
     ]
   },
@@ -169,10 +160,5 @@
     "languages": "kotlin-objc",
     "type": "turbo-module",
     "version": "0.54.2"
-  },
-  "expo": {
-    "plugins": [
-      "@novastera-oss/rn-fileinfo"
-    ]
   }
 }

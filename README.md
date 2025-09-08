@@ -17,7 +17,7 @@ This package is intentionally minimal, providing just the utilities needed for q
 * **File info retrieval**: Get file size, name, path, and timestamps
 * **Directory utilities**: Collect metadata for all files in a base directory in a single call
 * **TurboModule ready**: Built with modern React Native standards, autolinking supported
-* **Expo-compatible**: Can be integrated with managed or bare workflows
+* **Expo-compatible**: Works with Expo managed and bare workflows via autolinking
 
 ## Use Cases
 
@@ -54,15 +54,7 @@ cd ios && pod install
 npx expo install @novastera-oss/rn-fileinfo
 ```
 
-Add the plugin to your `app.json` or `app.config.js`:
-
-```json
-{
-  "expo": {
-    "plugins": ["@novastera-oss/rn-fileinfo"]
-  }
-}
-```
+The package uses React Native's autolinking, so no additional configuration is needed for Expo projects.
 
 ## Usage
 

@@ -1,9 +1,0 @@
-{
-  "platforms": ["ios", "android"],
-  "ios": {
-    "modules": ["RnFileinfo"]
-  },
-  "android": {
-    "modules": ["com.novastera.rnfileinfo.RnFileinfoModule"]
-  }
-}

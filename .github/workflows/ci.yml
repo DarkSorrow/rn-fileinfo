@@ -48,10 +48,6 @@ jobs:
             exit 1
           fi
           
-          if [ ! -f "expo-plugin/build/index.js" ]; then
-            echo "❌ Expo plugin build failed!"
-            exit 1
-          fi
           
           # Verify native module files exist
           if [ ! -f "ios/RnFileinfo.h" ] || [ ! -f "ios/RnFileinfo.mm" ]; then
@@ -123,9 +119,6 @@ jobs:
             sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/g" lib/module/package.json
           fi
           
-          if [ -f "expo-plugin/build/package.json" ]; then
-            sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/g" expo-plugin/build/package.json
-          fi
           
           echo "✅ Version updated to $VERSION"
 
