@@ -129,6 +129,6 @@ jobs:
           echo "✅ Version updated to $VERSION"
 
       - name: Publish to NPM
-        run: yarn npm publish --access public
+        run: npm publish --access public
         env:
-          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_SECRET }} 
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_SECRET }} 
