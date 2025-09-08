@@ -1,0 +1,135 @@
+name: CI and Publish
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install Dependencies
+        run: yarn install --immutable
+
+      - name: Build Package
+        run: yarn prepare
+
+      - name: Verify Build Output
+        run: |
+          echo "Verifying build output..."
+          if [ ! -d "lib" ]; then
+            echo "❌ lib directory not found!"
+            exit 1
+          fi
+          
+          if [ ! -f "lib/module/index.js" ]; then
+            echo "❌ Module build failed!"
+            exit 1
+          fi
+          
+          if [ ! -f "lib/typescript/index.d.ts" ]; then
+            echo "❌ TypeScript build failed!"
+            exit 1
+          fi
+          
+          if [ ! -f "expo-plugin/build/index.js" ]; then
+            echo "❌ Expo plugin build failed!"
+            exit 1
+          fi
+          
+          # Verify native module files exist
+          if [ ! -f "ios/RnFileinfo.h" ] || [ ! -f "ios/RnFileinfo.mm" ]; then
+            echo "❌ iOS native module files missing!"
+            exit 1
+          fi
+          
+          if [ ! -f "android/src/main/java/com/novastera/rnfileinfo/RnFileinfoModule.kt" ]; then
+            echo "❌ Android native module files missing!"
+            exit 1
+          fi
+          
+          # Verify TypeScript definitions contain expected exports
+          if ! grep -q "getFileInfo" lib/typescript/index.d.ts; then
+            echo "❌ TypeScript definitions missing getFileInfo export!"
+            exit 1
+          fi
+          
+          if ! grep -q "getDirectoryInfo" lib/typescript/index.d.ts; then
+            echo "❌ TypeScript definitions missing getDirectoryInfo export!"
+            exit 1
+          fi
+          
+          echo "✅ Build verification passed"
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-artifacts
+          path: .
+          retention-days: 1
+
+  publish:
+    name: Publish to NPM
+    if: github.event_name == 'release' && github.event.action == 'published'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: package-artifacts
+          path: .
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Update Version
+        run: |
+          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${VERSION#v}"  # Remove 'v' prefix
+          echo "Publishing version: $VERSION"
+          
+          # Update package.json version directly
+          node -e "
+            const pkg = require('./package.json');
+            pkg.version = '$VERSION';
+            require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+          
+          # Update version in built artifacts
+          if [ -f "lib/module/package.json" ]; then
+            sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/g" lib/module/package.json
+          fi
+          
+          if [ -f "expo-plugin/build/package.json" ]; then
+            sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/g" expo-plugin/build/package.json
+          fi
+          
+          echo "✅ Version updated to $VERSION"
+
+      - name: Publish to NPM
+        run: yarn npm publish --access public
+        env:
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_SECRET }} 
