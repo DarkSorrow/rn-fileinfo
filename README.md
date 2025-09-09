@@ -90,8 +90,10 @@ const fileInfo = await getFileInfo('/path/to/your/file.txt');
 ```typescript
 import RnFileinfo from '@novastera-oss/rn-fileinfo';
 
-// Get all files in a directory
-const files = await RnFileinfo.getDirectoryInfo('/path/to/directory');
+// Get all files in a directory (options object is required)
+const files = await RnFileinfo.getDirectoryInfo('/path/to/directory', {
+  recursive: true
+});
 console.log(files);
 
 // Get files recursively with options
@@ -100,7 +102,15 @@ const allFiles = await RnFileinfo.getDirectoryInfo('/path/to/directory', {
   includeHidden: false,
   maxDepth: 3
 });
+
+// Get files with default options (non-recursive, exclude hidden files)
+const defaultFiles = await RnFileinfo.getDirectoryInfo('/path/to/directory', {
+  recursive: false,
+  includeHidden: false
+});
 ```
+
+**Important**: The `getDirectoryInfo` method requires both arguments - the directory path and an options object. You cannot call it with just the path.
 
 ### Utility Functions
 
@@ -185,15 +195,17 @@ Returns file information for a single file.
 
 **Returns:** Promise that resolves to `FileInfo` object
 
-#### `RnFileinfo.getDirectoryInfo(path: string, options?: DirectoryOptions): Promise<FileInfo[]>`
+#### `RnFileinfo.getDirectoryInfo(path: string, options: DirectoryOptions): Promise<FileInfo[]>`
 
 Returns file information for all files in a directory.
 
 **Parameters:**
 - `path` (string): The directory path to scan
-- `options` (DirectoryOptions, optional): Configuration for directory scanning
+- `options` (DirectoryOptions, **required**): Configuration for directory scanning
 
 **Returns:** Promise that resolves to array of `FileInfo` objects
+
+**Note**: The `options` parameter is required. Pass an empty object `{}` for default behavior (non-recursive, exclude hidden files).
 
 #### `RnFileinfo.exists(path: string): Promise<boolean>`
 
