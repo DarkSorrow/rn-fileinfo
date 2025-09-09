@@ -1,0 +1,9 @@
+{
+  "name": "@novastera-oss/rn-fileinfo",
+  "android": {
+    "modulesClassNames": ["com.novastera.rnfileinfo.RnFileinfoModule"]
+  },
+  "ios": {
+    "modulesClassNames": ["RnFileinfo"]
+  }
+}

@@ -6,7 +6,7 @@ module.exports = {
         packageImportPath: 'import com.novastera.rnfileinfo.RnFileinfoPackage;',
       },
       ios: {
-        podspecPath: '../ios/RnFileinfo.podspec',
+        podspecPath: '../RnFileinfo.podspec',
       },
     },
   },

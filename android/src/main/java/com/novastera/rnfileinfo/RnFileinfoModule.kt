@@ -1,18 +1,17 @@
 package com.novastera.rnfileinfo
 
 import com.facebook.react.bridge.*
-import com.facebook.react.turbomodule.core.interfaces.TurboModule
+import com.facebook.react.module.annotations.ReactModule
 import java.io.File
 
-class RnFileinfoModule(reactContext: ReactApplicationContext) : NativeRnFileinfoSpec(reactContext), TurboModule {
+@ReactModule(name = RnFileinfoModule.NAME)
+class RnFileinfoModule(private val reactContext: ReactApplicationContext) : NativeRnFileinfoSpec(reactContext) {
     
     companion object {
         const val NAME = "RnFileinfo"
     }
 
-    override fun getName(): String {
-        return NAME
-    }
+    override fun getName(): String = NAME
 
     override fun getFileInfo(path: String, promise: Promise) {
         try {

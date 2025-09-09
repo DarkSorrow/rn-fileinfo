@@ -19,6 +19,7 @@
     "ios",
     "*.podspec",
     "react-native.config.js",
+    "expo-module.config.json",
     "!ios/build",
     "!android/build",
     "!android/gradle",
@@ -154,5 +155,10 @@
     "languages": "kotlin-objc",
     "type": "turbo-module",
     "version": "0.54.2"
+  },
+  "expo": {
+    "plugins": [
+      "@novastera-oss/rn-fileinfo"
+    ]
   }
 }

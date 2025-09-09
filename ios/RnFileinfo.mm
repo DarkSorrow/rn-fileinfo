@@ -1,25 +1,14 @@
 #import "RnFileinfo.h"
-#import <ReactCommon/RCTTurboModule.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTLog.h>
 #import <Foundation/Foundation.h>
 
 @implementation RnFileinfo
 
 RCT_EXPORT_MODULE()
 
-+ (BOOL)requiresMainQueueSetup
-{
-  return NO;
-}
-
-- (dispatch_queue_t)methodQueue
-{
-  // Use a dedicated concurrent queue for file operations to avoid blocking
-  static dispatch_queue_t fileQueue = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    fileQueue = dispatch_queue_create("com.novastera.rnfileinfo.queue", DISPATCH_QUEUE_CONCURRENT);
-  });
-  return fileQueue;
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeRnFileinfoSpecJSI>(params);
 }
 
 - (void)getFileInfo:(NSString *)path

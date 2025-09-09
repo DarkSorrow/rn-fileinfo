@@ -1,6 +1,6 @@
 require "json"
 
-package = JSON.parse(File.read(File.join(__dir__, "..", "package.json")))
+package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
 Pod::Spec.new do |s|
   s.name         = "RnFileinfo"
@@ -14,8 +14,10 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/techinstra/rn-fileinfo.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm}"
-  s.requires_arc = true
+  s.private_header_files = "ios/**/*.h"
+  
+  # Build as static library (default for React Native modules)
+  s.static_framework = true
 
-  s.dependency "React-Core"
-  s.dependency "ReactCommon/turbomodule/core"
+  install_modules_dependencies(s)
 end
