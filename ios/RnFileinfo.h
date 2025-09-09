@@ -1,8 +1,6 @@
-#import <Foundation/Foundation.h>
+#import <RnFileinfoSpec/RnFileinfoSpec.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-@protocol NativeRnFileinfoSpec;
 
 @interface RnFileinfo : NSObject <NativeRnFileinfoSpec>
 @end

@@ -150,7 +150,7 @@
     ]
   },
   "codegenConfig": {
-    "name": "RnFileinfo",
+    "name": "RnFileinfoSpec",
     "type": "modules",
     "jsSrcsDir": "src",
     "android": {
