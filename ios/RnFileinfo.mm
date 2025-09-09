@@ -68,7 +68,7 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)getDirectoryInfo:(NSString *)path
-                 options:(NSDictionary *)options
+                 options:(JS::NativeRnFileinfo::SpecGetDirectoryInfoOptions &)options
                  resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject
 {
@@ -90,9 +90,9 @@ RCT_EXPORT_MODULE()
     }
     
     // Parse options
-    BOOL recursive = options[@"recursive"] ? [options[@"recursive"] boolValue] : NO;
-    BOOL includeHidden = options[@"includeHidden"] ? [options[@"includeHidden"] boolValue] : NO;
-    NSInteger maxDepth = options[@"maxDepth"] ? [options[@"maxDepth"] integerValue] : NSIntegerMax;
+    BOOL recursive = options.recursive().has_value() ? options.recursive().value() : NO;
+    BOOL includeHidden = options.includeHidden().has_value() ? options.includeHidden().value() : NO;
+    NSInteger maxDepth = options.maxDepth().has_value() ? (NSInteger)options.maxDepth().value() : NSIntegerMax;
     
     NSMutableArray *fileInfos = [NSMutableArray array];
     [self scanDirectory:cleanedPath

@@ -1,4 +1,4 @@
-#import <RnFileinfoSpec/RnFileinfoSpec.h>
+#import <React/RCTBridgeModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

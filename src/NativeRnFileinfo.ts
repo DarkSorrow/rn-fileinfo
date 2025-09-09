@@ -23,7 +23,7 @@ export interface Spec extends TurboModule {
    * @param options Optional configuration for directory scanning
    * @returns Promise that resolves to array of FileInfo objects
    */
-  getDirectoryInfo(path: string, options?: {
+  getDirectoryInfo(path: string, options: {
     recursive?: boolean;
     includeHidden?: boolean;
     maxDepth?: number;
