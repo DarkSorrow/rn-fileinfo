@@ -1,0 +1,5 @@
+module RnFileinfo {
+  umbrella header "RnFileinfo.h"
+  export *
+  module * { export * }
+} 

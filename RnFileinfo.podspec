@@ -10,10 +10,10 @@ Pod::Spec.new do |s|
   s.license      = package["license"]
   s.authors      = package["author"]
 
-  s.platforms    = { :ios => min_ios_version_supported }
-  s.source       = { :git => "https://github.com/Darksorrow/rn-fileinfo.git", :tag => "#{s.version}" }
+  s.platforms    = { :ios => "12.4" }
+  s.source       = { :git => "https://github.com/DarkSorrow/rn-fileinfo.git", :tag => "#{s.version}" }
 
-  s.source_files = "ios/**/*.{h,m,mm}"
+  s.source_files = "ios/**/*.{h,m,mm,cpp}"
   s.private_header_files = "ios/**/*.h"
   
   # Build as static library (default for React Native modules)

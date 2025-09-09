@@ -1,5 +1,4 @@
 #import "RnFileinfo.h"
-#import <React/RCTBridgeModule.h>
 #import <React/RCTLog.h>
 #import <Foundation/Foundation.h>
 
