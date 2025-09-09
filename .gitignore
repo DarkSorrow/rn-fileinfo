@@ -84,6 +84,24 @@ lib/
 dist/
 build/
 
+# Example project (development only)
+RnFileinfoExample/
+
+# Example project build outputs (backup patterns)
+RnFileinfoExample/android/build/
+RnFileinfoExample/android/app/build/
+RnFileinfoExample/ios/build/
+RnFileinfoExample/ios/Pods/
+RnFileinfoExample/node_modules/
+RnFileinfoExample/.expo/
+RnFileinfoExample/web-build/
+RnFileinfoExample/*.log
+RnFileinfoExample/.metro-health-check*
+RnFileinfoExample/android/.gradle/
+RnFileinfoExample/android/local.properties
+RnFileinfoExample/android/*.keystore
+!RnFileinfoExample/android/app/debug.keystore
+
 # TypeScript
 *.tsbuildinfo
 
