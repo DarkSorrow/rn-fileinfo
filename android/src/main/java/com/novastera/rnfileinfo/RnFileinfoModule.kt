@@ -13,9 +13,21 @@ class RnFileinfoModule(private val reactContext: ReactApplicationContext) : Nati
 
     override fun getName(): String = NAME
 
+    /**
+     * Clean file path by removing file:// prefix if present
+     */
+    private fun cleanPath(path: String): String {
+        return if (path.startsWith("file://")) {
+            path.substring(7) // Remove "file://" prefix
+        } else {
+            path
+        }
+    }
+
     override fun getFileInfo(path: String, promise: Promise) {
         try {
-            val file = File(path)
+            val cleanedPath = cleanPath(path)
+            val file = File(cleanedPath)
             
             // Use lightweight exists() check for better performance
             if (!file.exists()) {
@@ -41,7 +53,8 @@ class RnFileinfoModule(private val reactContext: ReactApplicationContext) : Nati
 
     override fun getDirectoryInfo(path: String, options: ReadableMap?, promise: Promise) {
         try {
-            val file = File(path)
+            val cleanedPath = cleanPath(path)
+            val file = File(cleanedPath)
             
             if (!file.exists()) {
                 promise.reject("DIRECTORY_NOT_FOUND", "Directory not found: $path")
@@ -53,9 +66,9 @@ class RnFileinfoModule(private val reactContext: ReactApplicationContext) : Nati
                 return
             }
 
-            val recursive = options?.getBoolean("recursive") ?: false
-            val includeHidden = options?.getBoolean("includeHidden") ?: false
-            val maxDepth = options?.getInt("maxDepth") ?: Int.MAX_VALUE
+            val recursive = if (options?.hasKey("recursive") == true) options.getBoolean("recursive") else false
+            val includeHidden = if (options?.hasKey("includeHidden") == true) options.getBoolean("includeHidden") else false
+            val maxDepth = if (options?.hasKey("maxDepth") == true) options.getInt("maxDepth") else Int.MAX_VALUE
 
             val fileInfos = mutableListOf<WritableMap>()
             scanDirectory(file, fileInfos, recursive, includeHidden, maxDepth, 0)
@@ -154,7 +167,8 @@ class RnFileinfoModule(private val reactContext: ReactApplicationContext) : Nati
 
     override fun exists(path: String, promise: Promise) {
         try {
-            val file = File(path)
+            val cleanedPath = cleanPath(path)
+            val file = File(cleanedPath)
             promise.resolve(file.exists())
         } catch (e: Exception) {
             promise.reject("UNKNOWN_ERROR", "Unexpected error: ${e.message}", e)
@@ -163,7 +177,8 @@ class RnFileinfoModule(private val reactContext: ReactApplicationContext) : Nati
 
     override fun isFile(path: String, promise: Promise) {
         try {
-            val file = File(path)
+            val cleanedPath = cleanPath(path)
+            val file = File(cleanedPath)
             promise.resolve(file.exists() && file.isFile)
         } catch (e: Exception) {
             promise.reject("UNKNOWN_ERROR", "Unexpected error: ${e.message}", e)
@@ -172,7 +187,8 @@ class RnFileinfoModule(private val reactContext: ReactApplicationContext) : Nati
 
     override fun isDirectory(path: String, promise: Promise) {
         try {
-            val file = File(path)
+            val cleanedPath = cleanPath(path)
+            val file = File(cleanedPath)
             promise.resolve(file.exists() && file.isDirectory)
         } catch (e: Exception) {
             promise.reject("UNKNOWN_ERROR", "Unexpected error: ${e.message}", e)

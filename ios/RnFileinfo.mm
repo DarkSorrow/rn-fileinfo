@@ -11,41 +11,48 @@ RCT_EXPORT_MODULE()
   return std::make_shared<facebook::react::NativeRnFileinfoSpecJSI>(params);
 }
 
+- (NSString *)cleanPath:(NSString *)path {
+  if ([path hasPrefix:@"file://"]) {
+    return [path substringFromIndex:7]; // Remove "file://" prefix
+  }
+  return path;
+}
+
 - (void)getFileInfo:(NSString *)path
             resolve:(RCTPromiseResolveBlock)resolve
              reject:(RCTPromiseRejectBlock)reject
 {
   @try {
+    NSString *cleanedPath = [self cleanPath:path];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error;
     
     // Use lightweight fileExistsAtPath:isDirectory: for better performance
     BOOL isDirectory;
-    if (![fileManager fileExistsAtPath:path isDirectory:&isDirectory]) {
+    if (![fileManager fileExistsAtPath:cleanedPath isDirectory:&isDirectory]) {
       reject(@"FILE_NOT_FOUND", [NSString stringWithFormat:@"File not found: %@", path], nil);
       return;
     }
     
     // Get file attributes with minimal overhead
-    NSDictionary *attributes = [fileManager attributesOfItemAtPath:path error:&error];
+    NSDictionary *attributes = [fileManager attributesOfItemAtPath:cleanedPath error:&error];
     if (error) {
       reject(@"FILE_ACCESS_ERROR", [NSString stringWithFormat:@"Cannot access file: %@", error.localizedDescription], error);
       return;
     }
     
     // Extract file information efficiently
-    NSString *fileName = [path lastPathComponent];
+    NSString *fileName = [cleanedPath lastPathComponent];
     NSNumber *fileSize = attributes[NSFileSize];
     NSDate *creationDate = attributes[NSFileCreationDate];
     NSDate *modificationDate = attributes[NSFileModificationDate];
-    // Use the isDirectory flag we already got from fileExistsAtPath:isDirectory:
     
     // Convert dates to milliseconds
     NSTimeInterval creationTime = [creationDate timeIntervalSince1970] * 1000;
     NSTimeInterval modificationTime = [modificationDate timeIntervalSince1970] * 1000;
     
     NSDictionary *fileInfo = @{
-      @"path": path,
+      @"path": cleanedPath,
       @"name": fileName,
       @"size": fileSize ?: @0,
       @"isFile": @(!isDirectory),
@@ -66,17 +73,18 @@ RCT_EXPORT_MODULE()
                   reject:(RCTPromiseRejectBlock)reject
 {
   @try {
+    NSString *cleanedPath = [self cleanPath:path];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error;
     
     // Check if directory exists
-    if (![fileManager fileExistsAtPath:path]) {
+    if (![fileManager fileExistsAtPath:cleanedPath]) {
       reject(@"DIRECTORY_NOT_FOUND", [NSString stringWithFormat:@"Directory not found: %@", path], nil);
       return;
     }
     
     BOOL isDirectory;
-    if (![fileManager fileExistsAtPath:path isDirectory:&isDirectory] || !isDirectory) {
+    if (![fileManager fileExistsAtPath:cleanedPath isDirectory:&isDirectory] || !isDirectory) {
       reject(@"NOT_A_DIRECTORY", [NSString stringWithFormat:@"Path is not a directory: %@", path], nil);
       return;
     }
@@ -87,7 +95,7 @@ RCT_EXPORT_MODULE()
     NSInteger maxDepth = options[@"maxDepth"] ? [options[@"maxDepth"] integerValue] : NSIntegerMax;
     
     NSMutableArray *fileInfos = [NSMutableArray array];
-    [self scanDirectory:path
+    [self scanDirectory:cleanedPath
             fileManager:fileManager
                recursive:recursive
            includeHidden:includeHidden
@@ -120,13 +128,13 @@ RCT_EXPORT_MODULE()
     return;
   }
   
-  // Use efficient directory enumeration to avoid loading all files into memory at once
+  // Use efficient directory enumeration with proper error handling
   NSArray *contents = [fileManager contentsOfDirectoryAtPath:directoryPath error:error];
   if (*error) {
     return;
   }
   
-  // Limit the number of files processed in a single batch to prevent memory issues
+  // Process files in batches to prevent memory issues
   const NSInteger MAX_FILES_PER_BATCH = 1000;
   if (contents.count > MAX_FILES_PER_BATCH) {
     // Process in batches for very large directories
@@ -156,12 +164,14 @@ RCT_EXPORT_MODULE()
     }
     
     NSString *fullPath = [directoryPath stringByAppendingPathComponent:item];
+    
+    // Get file attributes with proper error handling
     NSDictionary *attributes = [fileManager attributesOfItemAtPath:fullPath error:error];
     if (*error) {
       return;
     }
     
-    // Extract file information
+    // Extract file information efficiently
     NSNumber *fileSize = attributes[NSFileSize];
     NSDate *creationDate = attributes[NSFileCreationDate];
     NSDate *modificationDate = attributes[NSFileModificationDate];
@@ -217,12 +227,14 @@ RCT_EXPORT_MODULE()
     }
     
     NSString *fullPath = [directoryPath stringByAppendingPathComponent:item];
+    
+    // Get file attributes with proper error handling
     NSDictionary *attributes = [fileManager attributesOfItemAtPath:fullPath error:error];
     if (*error) {
       return;
     }
     
-    // Extract file information
+    // Extract file information efficiently
     NSNumber *fileSize = attributes[NSFileSize];
     NSDate *creationDate = attributes[NSFileCreationDate];
     NSDate *modificationDate = attributes[NSFileModificationDate];
@@ -266,8 +278,9 @@ RCT_EXPORT_MODULE()
         reject:(RCTPromiseRejectBlock)reject
 {
   @try {
+    NSString *cleanedPath = [self cleanPath:path];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    BOOL exists = [fileManager fileExistsAtPath:path];
+    BOOL exists = [fileManager fileExistsAtPath:cleanedPath];
     resolve(@(exists));
   } @catch (NSException *exception) {
     reject(@"UNKNOWN_ERROR", [NSString stringWithFormat:@"Unexpected error: %@", exception.reason], nil);
@@ -275,13 +288,14 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)isFile:(NSString *)path
-       resolve:(RCTPromiseResolveBlock)resolve
-        reject:(RCTPromiseRejectBlock)reject
+        resolve:(RCTPromiseResolveBlock)resolve
+         reject:(RCTPromiseRejectBlock)reject
 {
   @try {
+    NSString *cleanedPath = [self cleanPath:path];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     BOOL isDirectory;
-    BOOL exists = [fileManager fileExistsAtPath:path isDirectory:&isDirectory];
+    BOOL exists = [fileManager fileExistsAtPath:cleanedPath isDirectory:&isDirectory];
     resolve(@(exists && !isDirectory));
   } @catch (NSException *exception) {
     reject(@"UNKNOWN_ERROR", [NSString stringWithFormat:@"Unexpected error: %@", exception.reason], nil);
@@ -289,13 +303,14 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)isDirectory:(NSString *)path
-            resolve:(RCTPromiseResolveBlock)resolve
-             reject:(RCTPromiseRejectBlock)reject
+             resolve:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject
 {
   @try {
+    NSString *cleanedPath = [self cleanPath:path];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     BOOL isDirectory;
-    BOOL exists = [fileManager fileExistsAtPath:path isDirectory:&isDirectory];
+    BOOL exists = [fileManager fileExistsAtPath:cleanedPath isDirectory:&isDirectory];
     resolve(@(exists && isDirectory));
   } @catch (NSException *exception) {
     reject(@"UNKNOWN_ERROR", [NSString stringWithFormat:@"Unexpected error: %@", exception.reason], nil);
