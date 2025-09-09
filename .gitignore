@@ -79,10 +79,11 @@ buck-out/
 !.yarn/sdks
 !.yarn/versions
 
-# Build outputs
+# Build outputs (but keep plugin/build for npm package)
 lib/
 dist/
 build/
+!plugin/build/
 
 # Example project (development only)
 RnFileinfoExample/
